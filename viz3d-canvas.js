@@ -3,7 +3,7 @@
  * Uses simple perspective projection instead of Three.js
  */
 
-class Viz3D {
+class Viz3DCanvas {
     constructor(canvasId, options = {}) {
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) {
@@ -389,5 +389,5 @@ class Viz3D {
 
 // Export
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Viz3D;
+    module.exports = Viz3DCanvas;
 }
