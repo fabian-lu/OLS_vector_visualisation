@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Linear Algebra for OLS - Interactive Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Geometric Linear Algebra for OLS</h1>
+        <p class="subtitle">Interactive 2D & 3D Visualization of Observation-Space and Parameter-Space Perspectives</p>
+    </header>
+
+    <nav id="module-nav">
+        <button class="nav-btn active" data-module="0">Module 0: Foundations</button>
+        <button class="nav-btn" data-module="1">Module 1: Vector Operations</button>
+        <button class="nav-btn" data-module="2">Module 2: Independence & Rank</button>
+        <button class="nav-btn" data-module="3">Module 3: Linear Maps</button>
+        <button class="nav-btn" data-module="4">Module 4: Projections</button>
+        <button class="nav-btn" data-module="5">Module 5: OLS (Obs-Space)</button>
+        <button class="nav-btn" data-module="6">Module 6: OLS (Param-Space)</button>
+        <button class="nav-btn" data-module="7">Module 7: Inference</button>
+        <button class="nav-btn" data-module="8">Module 8: Diagnostics</button>
+        <button class="nav-btn" data-module="9">Module 9: Extensions</button>
+    </nav>
+
+    <main id="app">
+        <!-- Module 0: Foundations & Notation -->
+        <section class="module active" id="module-0">
+            <div class="theory">
+                <h2>Module 0: Foundations & Notation</h2>
+                <p><strong>Key Concepts:</strong> Vector spaces, subspaces, basis, dimension, orthogonality, norms, inner products.</p>
+                <div class="definition">
+                    <p><strong>Inner Product:</strong> ⟨u, v⟩ = u₁v₁ + u₂v₂ + ... + uₙvₙ</p>
+                    <p><strong>Norm:</strong> ∥v∥ = √⟨v, v⟩</p>
+                    <p><strong>Orthogonality:</strong> u ⊥ v ⟺ ⟨u, v⟩ = 0</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Vector Input</h3>
+                    <div class="dimension-toggle">
+                        <label><input type="radio" name="dim-0" value="2" checked> 2D</label>
+                        <label><input type="radio" name="dim-0" value="3"> 3D</label>
+                    </div>
+                    <div class="vector-inputs">
+                        <div class="vector-input-group">
+                            <label>Vector u:</label>
+                            <input type="number" id="u-x-0" value="3" step="0.1" placeholder="x">
+                            <input type="number" id="u-y-0" value="2" step="0.1" placeholder="y">
+                            <input type="number" id="u-z-0" value="0" step="0.1" placeholder="z" style="display:none">
+                        </div>
+                        <div class="vector-input-group">
+                            <label>Vector v:</label>
+                            <input type="number" id="v-x-0" value="1" step="0.1" placeholder="x">
+                            <input type="number" id="v-y-0" value="4" step="0.1" placeholder="y">
+                            <input type="number" id="v-z-0" value="0" step="0.1" placeholder="z" style="display:none">
+                        </div>
+                    </div>
+                    <div class="toggle-options">
+                        <label><input type="checkbox" id="show-orthogonal-0" checked> Show orthogonality hints</label>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel">
+                        <h4>Visualization</h4>
+                        <canvas id="canvas-0" width="600" height="400"></canvas>
+                    </div>
+                    <div class="view-panel">
+                        <h4>Computed Properties</h4>
+                        <div id="output-0" class="output-panel">
+                            <p>∥u∥ = <span id="norm-u-0">-</span></p>
+                            <p>∥v∥ = <span id="norm-v-0">-</span></p>
+                            <p>⟨u, v⟩ = <span id="dot-uv-0">-</span></p>
+                            <p>cos(θ) = <span id="cos-theta-0">-</span></p>
+                            <p>θ = <span id="theta-0">-</span>°</p>
+                            <p class="ortho-check" id="ortho-check-0">Orthogonal: <span>-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 1: Vector Operations & Linear Combinations -->
+        <section class="module" id="module-1">
+            <div class="theory">
+                <h2>Module 1: Vector Operations & Linear Combinations</h2>
+                <p><strong>Key Concepts:</strong> Addition, scalar multiplication, linear combinations, span, convex combinations.</p>
+                <div class="definition">
+                    <p><strong>Linear Combination:</strong> w = αu + βv where α, β ∈ ℝ</p>
+                    <p><strong>Span:</strong> span{u, v} = {αu + βv : α, β ∈ ℝ}</p>
+                    <p><strong>Convex Combination:</strong> α + β = 1, α ≥ 0, β ≥ 0</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Vector Input</h3>
+                    <div class="dimension-toggle">
+                        <label><input type="radio" name="dim-1" value="2" checked> 2D</label>
+                        <label><input type="radio" name="dim-1" value="3"> 3D</label>
+                    </div>
+                    <div class="vector-inputs">
+                        <div class="vector-input-group">
+                            <label>Vector u:</label>
+                            <input type="number" id="u-x-1" value="2" step="0.1">
+                            <input type="number" id="u-y-1" value="1" step="0.1">
+                            <input type="number" id="u-z-1" value="0" step="0.1" style="display:none">
+                        </div>
+                        <div class="vector-input-group">
+                            <label>Vector v:</label>
+                            <input type="number" id="v-x-1" value="1" step="0.1">
+                            <input type="number" id="v-y-1" value="3" step="0.1">
+                            <input type="number" id="v-z-1" value="0" step="0.1" style="display:none">
+                        </div>
+                        <div class="vector-input-group">
+                            <label>Scalar α:</label>
+                            <input type="range" id="alpha-1" min="-3" max="3" step="0.1" value="1.5">
+                            <input type="number" id="alpha-num-1" min="-10" max="10" step="0.1" value="1.5">
+                        </div>
+                        <div class="vector-input-group">
+                            <label>Scalar β:</label>
+                            <input type="range" id="beta-1" min="-3" max="3" step="0.1" value="0.8">
+                            <input type="number" id="beta-num-1" min="-10" max="10" step="0.1" value="0.8">
+                        </div>
+                    </div>
+                    <div class="toggle-options">
+                        <label><input type="checkbox" id="show-span-1" checked> Show span</label>
+                        <label><input type="checkbox" id="show-grid-1"> Show grid</label>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel full-width">
+                        <h4>Linear Combination: w = αu + βv</h4>
+                        <canvas id="canvas-1" width="800" height="500"></canvas>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-1">
+                    <p>w = <span id="w-result-1">-</span></p>
+                    <p>∥w∥ = <span id="norm-w-1">-</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 2: Linear Independence, Basis, Rank -->
+        <section class="module" id="module-2">
+            <div class="theory">
+                <h2>Module 2: Linear Independence, Basis, Rank</h2>
+                <p><strong>Key Concepts:</strong> Linear independence, basis, rank, null space, column/row spaces.</p>
+                <div class="definition">
+                    <p><strong>Linear Independence:</strong> {v₁, ..., vₖ} independent ⟺ α₁v₁ + ... + αₖvₖ = 0 ⟹ all αᵢ = 0</p>
+                    <p><strong>Rank:</strong> rank(A) = dim(𝒞(A)) = number of linearly independent columns</p>
+                    <p><strong>Column Space:</strong> 𝒞(A) = {Ax : x ∈ ℝⁿ}</p>
+                    <p><strong>Null Space:</strong> 𝒩(A) = {x : Ax = 0}</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Matrix Input</h3>
+                    <div class="matrix-input">
+                        <label>Enter matrix A (one row per line, space-separated):</label>
+                        <textarea id="matrix-input-2" rows="4" cols="30">1 2
+2 4
+1 3</textarea>
+                        <button id="parse-matrix-2">Update Matrix</button>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel">
+                        <h4>Column Space 𝒞(A)</h4>
+                        <canvas id="canvas-2a" width="400" height="400"></canvas>
+                    </div>
+                    <div class="view-panel">
+                        <h4>Analysis</h4>
+                        <div id="output-2" class="output-panel">
+                            <p>Matrix A: <span id="matrix-display-2">-</span></p>
+                            <p>Shape: <span id="shape-2">-</span></p>
+                            <p>Rank: <span id="rank-2">-</span></p>
+                            <p>Condition Number: <span id="cond-2">-</span></p>
+                            <p>Column Space Dim: <span id="col-dim-2">-</span></p>
+                            <p>Null Space Dim: <span id="null-dim-2">-</span></p>
+                            <p class="warning" id="rank-warning-2"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 3: Matrices as Linear Maps -->
+        <section class="module" id="module-3">
+            <div class="theory">
+                <h2>Module 3: Matrices as Linear Maps</h2>
+                <p><strong>Key Concepts:</strong> Linear transformations, composition, inverses, determinants, eigenvectors/values.</p>
+                <div class="definition">
+                    <p><strong>Linear Map:</strong> T(αu + βv) = αT(u) + βT(v)</p>
+                    <p><strong>Determinant:</strong> det(A) measures area/volume scaling</p>
+                    <p><strong>Eigenvalue:</strong> Av = λv for eigenvector v</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Transformation Matrix (2×2)</h3>
+                    <div class="matrix-2x2">
+                        <input type="number" id="a11-3" value="1.5" step="0.1">
+                        <input type="number" id="a12-3" value="0.5" step="0.1">
+                        <input type="number" id="a21-3" value="0.5" step="0.1">
+                        <input type="number" id="a22-3" value="1.5" step="0.1">
+                    </div>
+                    <div class="preset-transforms">
+                        <button id="preset-rotation-3">Rotation</button>
+                        <button id="preset-shear-3">Shear</button>
+                        <button id="preset-scale-3">Scale</button>
+                        <button id="preset-reflect-3">Reflection</button>
+                    </div>
+                    <div class="toggle-options">
+                        <label><input type="checkbox" id="show-grid-3" checked> Show grid</label>
+                        <label><input type="checkbox" id="show-eigen-3" checked> Show eigenvectors</label>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel">
+                        <h4>Original Space</h4>
+                        <canvas id="canvas-3a" width="400" height="400"></canvas>
+                    </div>
+                    <div class="view-panel">
+                        <h4>Transformed Space</h4>
+                        <canvas id="canvas-3b" width="400" height="400"></canvas>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-3">
+                    <p>det(A) = <span id="det-3">-</span></p>
+                    <p>Eigenvalues: <span id="eigenvalues-3">-</span></p>
+                    <p>Eigenvectors: <span id="eigenvectors-3">-</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 4: Projections & Decompositions -->
+        <section class="module" id="module-4">
+            <div class="theory">
+                <h2>Module 4: Projections & Decompositions</h2>
+                <p><strong>Key Concepts:</strong> Orthogonal projection, QR decomposition, SVD.</p>
+                <div class="definition">
+                    <p><strong>Projection onto subspace:</strong> proj_U(v) = UU⁺v where U⁺ = (U'U)⁻¹U'</p>
+                    <p><strong>Orthogonal complement:</strong> v = v_∥ + v_⊥ where v_⊥ ⊥ U</p>
+                    <p><strong>QR Decomposition:</strong> A = QR where Q'Q = I, R upper triangular</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Vector and Subspace</h3>
+                    <div class="dimension-toggle">
+                        <label><input type="radio" name="dim-4" value="2" checked> 2D</label>
+                        <label><input type="radio" name="dim-4" value="3"> 3D</label>
+                    </div>
+                    <div class="vector-inputs">
+                        <div class="vector-input-group">
+                            <label>Vector v:</label>
+                            <input type="number" id="v-x-4" value="4" step="0.1">
+                            <input type="number" id="v-y-4" value="3" step="0.1">
+                            <input type="number" id="v-z-4" value="0" step="0.1" style="display:none">
+                        </div>
+                        <div class="vector-input-group">
+                            <label>Subspace basis u₁:</label>
+                            <input type="number" id="u1-x-4" value="1" step="0.1">
+                            <input type="number" id="u1-y-4" value="0.5" step="0.1">
+                            <input type="number" id="u1-z-4" value="0" step="0.1" style="display:none">
+                        </div>
+                        <div class="vector-input-group" id="u2-group-4" style="display:none">
+                            <label>Subspace basis u₂:</label>
+                            <input type="number" id="u2-x-4" value="0" step="0.1">
+                            <input type="number" id="u2-y-4" value="1" step="0.1">
+                            <input type="number" id="u2-z-4" value="1" step="0.1" style="display:none">
+                        </div>
+                    </div>
+                    <div class="toggle-options">
+                        <label><input type="checkbox" id="show-components-4" checked> Show v_∥ and v_⊥</label>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel full-width">
+                        <h4>Projection onto Subspace</h4>
+                        <canvas id="canvas-4" width="800" height="500"></canvas>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-4">
+                    <p>proj_U(v) = v_∥ = <span id="proj-v-4">-</span></p>
+                    <p>v_⊥ = <span id="perp-v-4">-</span></p>
+                    <p>∥v_∥∥² + ∥v_⊥∥² = <span id="sum-sq-4">-</span> (should equal ∥v∥² = <span id="norm-v-sq-4">-</span>)</p>
+                    <p>⟨v_∥, v_⊥⟩ = <span id="dot-proj-perp-4">-</span> (should be ≈ 0)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 5: OLS in Observation-Space -->
+        <section class="module" id="module-5">
+            <div class="theory">
+                <h2>Module 5: OLS in Observation-Space</h2>
+                <p><strong>Key Concepts:</strong> Model y = Xβ + ε; ŷ = P_X y where P_X = X(X'X)⁻¹X'; e ⊥ 𝒞(X).</p>
+                <div class="definition">
+                    <p><strong>Projection Matrix:</strong> P_X is idempotent (P² = P) and symmetric (P' = P)</p>
+                    <p><strong>Decomposition:</strong> TSS = ESS + RSS, where:</p>
+                    <ul>
+                        <li>TSS = ∥y - ȳ1∥² (total sum of squares)</li>
+                        <li>ESS = ∥ŷ - ȳ1∥² (explained sum of squares)</li>
+                        <li>RSS = ∥e∥² (residual sum of squares)</li>
+                    </ul>
+                    <p><strong>R²:</strong> R² = ESS/TSS = 1 - RSS/TSS</p>
+                </div>
+                <p class="reference"><em>Reference: Eggers [1] - OLS as orthogonal projection in observation space.</em></p>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Data Input</h3>
+                    <div class="data-input-methods">
+                        <button id="load-csv-5" class="btn-primary">Upload CSV</button>
+                        <button id="use-example-5" class="btn-secondary">Use Example Data</button>
+                        <input type="file" id="file-input-5" accept=".csv" style="display:none">
+                    </div>
+                    <div class="data-table">
+                        <label>Enter data (X columns, then y):</label>
+                        <textarea id="data-input-5" rows="8" cols="40">1 1 2
+1 2 3
+1 3 3.5
+1 4 5
+1 5 5.5</textarea>
+                        <button id="parse-data-5">Update Data</button>
+                    </div>
+                    <div class="model-spec">
+                        <label>Columns to include in X (space-separated, 0-indexed):</label>
+                        <input type="text" id="x-cols-5" value="0 1">
+                        <label>Y column:</label>
+                        <input type="number" id="y-col-5" value="2" min="0">
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel">
+                        <h4>Observation Space (ℝⁿ)</h4>
+                        <canvas id="canvas-5a" width="400" height="400"></canvas>
+                        <p class="help-text">Showing y, ŷ (projection onto 𝒞(X)), and e = y - ŷ</p>
+                    </div>
+                    <div class="view-panel">
+                        <h4>Data Space (2D scatter if p=2)</h4>
+                        <canvas id="canvas-5b" width="400" height="400"></canvas>
+                        <p class="help-text">Scatter plot with fitted line/plane</p>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-5">
+                    <h4>Regression Results</h4>
+                    <p>n = <span id="n-5">-</span>, p = <span id="p-5">-</span></p>
+                    <p>β̂ = <span id="beta-hat-5">-</span></p>
+                    <p>TSS = <span id="tss-5">-</span></p>
+                    <p>ESS = <span id="ess-5">-</span></p>
+                    <p>RSS = <span id="rss-5">-</span></p>
+                    <p>R² = <span id="r2-5">-</span></p>
+                    <p>Adjusted R² = <span id="adj-r2-5">-</span></p>
+                    <p>∥e∥ = <span id="norm-e-5">-</span></p>
+                    <p class="ortho-check">e ⊥ 𝒞(X)? <span id="ortho-check-5">-</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 6: OLS in Parameter-Space -->
+        <section class="module" id="module-6">
+            <div class="theory">
+                <h2>Module 6: OLS in Parameter-Space</h2>
+                <p><strong>Key Concepts:</strong> Loss surface S(β) = ∥y - Xβ∥²; normal equations X'Xβ = X'y; confidence ellipses.</p>
+                <div class="definition">
+                    <p><strong>Loss Function:</strong> S(β) is a quadratic form with elliptical contours</p>
+                    <p><strong>Curvature:</strong> Hessian = 2X'X determines ellipse orientation/scaling</p>
+                    <p><strong>Confidence Region:</strong> {β : (β - β̂)'(X'X)(β - β̂) ≤ c²σ²} is an ellipse</p>
+                    <p><strong>Collinearity:</strong> Near-singular X'X → elongated ellipses → high variance</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Use Data from Module 5</h3>
+                    <button id="sync-data-6">Sync from Module 5</button>
+                    <p class="info" id="data-info-6">Click to load data from Module 5</p>
+                    <div class="contour-options">
+                        <label>Number of contour levels:</label>
+                        <input type="range" id="contour-levels-6" min="5" max="20" value="10">
+                        <span id="contour-levels-display-6">10</span>
+                    </div>
+                    <div class="toggle-options">
+                        <label><input type="checkbox" id="show-confidence-6" checked> Show 95% confidence ellipse</label>
+                        <label><input type="checkbox" id="show-normal-eq-6"> Show normal equations geometrically</label>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel full-width">
+                        <h4>Parameter Space: Loss Contours S(β) (for p=2 or p=3)</h4>
+                        <canvas id="canvas-6" width="800" height="500"></canvas>
+                        <p class="help-text">Elliptical contours of S(β) = ∥y - Xβ∥²; minimum at β̂</p>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-6">
+                    <p>β̂ = <span id="beta-hat-6">-</span></p>
+                    <p>X'X eigenvalues: <span id="xtx-eigen-6">-</span></p>
+                    <p>Condition number κ(X'X): <span id="cond-xtx-6">-</span></p>
+                    <p class="warning" id="collinearity-warning-6"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 7: Inference (t-tests and F-tests) -->
+        <section class="module" id="module-7">
+            <div class="theory">
+                <h2>Module 7: Inference - t-tests and F-tests (Dual Perspectives)</h2>
+                <p><strong>Observation-space:</strong> Nested subspaces 𝒞(X₀) ⊂ 𝒞(X₁); F-test compares projection lengths.</p>
+                <p><strong>Parameter-space:</strong> Restrictions Rβ = r; F-test measures distance to constrained set under (X'X)-metric.</p>
+                <div class="definition">
+                    <p><strong>F-statistic:</strong> F = [(RSS₀ - RSS₁)/(df₀ - df₁)] / [RSS₁/(n - p₁)]</p>
+                    <p><strong>t-statistic:</strong> t = β̂ⱼ / SE(β̂ⱼ) where SE(β̂ⱼ) = σ̂√[(X'X)⁻¹]ⱼⱼ</p>
+                    <p><strong>Geometric view:</strong> ∥P₁y - P₀y∥² measures extra explained variance</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Model Specification</h3>
+                    <button id="sync-data-7">Sync from Module 5</button>
+                    <div class="model-comparison">
+                        <label>Reduced model X₀ columns (space-separated):</label>
+                        <input type="text" id="x0-cols-7" value="0">
+                        <label>Full model X₁ columns (space-separated):</label>
+                        <input type="text" id="x1-cols-7" value="0 1">
+                    </div>
+                    <div class="hypothesis-test">
+                        <h4>Alternative: General Linear Hypothesis Rβ = r</h4>
+                        <label>R matrix (one row per line):</label>
+                        <textarea id="r-matrix-7" rows="2" cols="20">0 1</textarea>
+                        <label>r vector:</label>
+                        <input type="text" id="r-vec-7" value="0">
+                        <button id="test-hypothesis-7">Test H₀: Rβ = r</button>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel">
+                        <h4>Observation-Space View</h4>
+                        <canvas id="canvas-7a" width="400" height="400"></canvas>
+                        <p class="help-text">Nested projections: 𝒞(X₀) ⊂ 𝒞(X₁)</p>
+                    </div>
+                    <div class="view-panel">
+                        <h4>Parameter-Space View</h4>
+                        <canvas id="canvas-7b" width="400" height="400"></canvas>
+                        <p class="help-text">Constraint hyperplane Rβ = r</p>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-7">
+                    <h4>F-test Results</h4>
+                    <p>RSS₀ = <span id="rss0-7">-</span>, df₀ = <span id="df0-7">-</span></p>
+                    <p>RSS₁ = <span id="rss1-7">-</span>, df₁ = <span id="df1-7">-</span></p>
+                    <p>F = <span id="f-stat-7">-</span></p>
+                    <p>p-value = <span id="p-value-7">-</span></p>
+                    <h4>t-tests (for individual βⱼ)</h4>
+                    <div id="t-tests-7">-</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 8: Diagnostics & Conditioning -->
+        <section class="module" id="module-8">
+            <div class="theory">
+                <h2>Module 8: Diagnostics & Conditioning</h2>
+                <p><strong>Key Concepts:</strong> Hat matrix H = P_X; leverage (diagonal of H); influence (Cook's distance).</p>
+                <div class="definition">
+                    <p><strong>Leverage:</strong> hᵢᵢ = [H]ᵢᵢ measures influence of yᵢ on ŷᵢ</p>
+                    <p><strong>Cook's Distance:</strong> Dᵢ = (eᵢ²/(p·σ²)) · (hᵢᵢ/(1-hᵢᵢ)²)</p>
+                    <p><strong>Outlier:</strong> Large |eᵢ|; high-leverage: large hᵢᵢ</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Interactive Data Editing</h3>
+                    <button id="sync-data-8">Load from Module 5</button>
+                    <p class="help-text">Click on plot to add/remove points; drag to move them</p>
+                    <button id="reset-data-8">Reset</button>
+                    <div class="diagnostic-options">
+                        <label><input type="checkbox" id="show-leverage-8" checked> Show leverage</label>
+                        <label><input type="checkbox" id="show-cooks-8" checked> Show Cook's distance</label>
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel">
+                        <h4>Data & Fitted Line (Click to edit)</h4>
+                        <canvas id="canvas-8a" width="400" height="400"></canvas>
+                    </div>
+                    <div class="view-panel">
+                        <h4>Diagnostics</h4>
+                        <canvas id="canvas-8b" width="400" height="400"></canvas>
+                        <p class="help-text">Leverage vs. Residual plot; point size = Cook's D</p>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-8">
+                    <p>Max leverage: <span id="max-lev-8">-</span> (point <span id="max-lev-idx-8">-</span>)</p>
+                    <p>Max Cook's D: <span id="max-cooks-8">-</span> (point <span id="max-cooks-idx-8">-</span>)</p>
+                    <p class="warning" id="diagnostics-warning-8"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 9: Extensions -->
+        <section class="module" id="module-9">
+            <div class="theory">
+                <h2>Module 9: Extensions</h2>
+                <p><strong>Key Topics:</strong> Ridge regression, Lasso (qualitative), PCA vs. OLS, weighted least squares.</p>
+                <div class="definition">
+                    <p><strong>Ridge:</strong> min ∥y - Xβ∥² + λ∥β∥² → elliptical contours meet circular penalty</p>
+                    <p><strong>Lasso:</strong> min ∥y - Xβ∥² + λ∥β∥₁ → contours meet diamond; induces sparsity</p>
+                    <p><strong>WLS:</strong> Change inner product to ⟨u, v⟩_W = u'Wv; re-do projections</p>
+                </div>
+            </div>
+            <div class="interactive-section">
+                <div class="controls">
+                    <h3>Extension Type</h3>
+                    <select id="extension-type-9">
+                        <option value="ridge">Ridge Regression</option>
+                        <option value="lasso">Lasso (Qualitative)</option>
+                        <option value="pca">PCA vs OLS</option>
+                        <option value="wls">Weighted Least Squares</option>
+                    </select>
+                    <button id="sync-data-9">Sync from Module 5</button>
+                    <div id="ridge-controls-9" class="extension-controls">
+                        <label>Ridge penalty λ:</label>
+                        <input type="range" id="lambda-ridge-9" min="0" max="10" step="0.1" value="1">
+                        <span id="lambda-display-9">1.0</span>
+                    </div>
+                    <div id="lasso-controls-9" class="extension-controls" style="display:none">
+                        <label>Lasso penalty λ:</label>
+                        <input type="range" id="lambda-lasso-9" min="0" max="10" step="0.1" value="1">
+                        <span id="lambda-lasso-display-9">1.0</span>
+                        <p class="help-text">Visualization is qualitative (diamond constraint)</p>
+                    </div>
+                    <div id="wls-controls-9" class="extension-controls" style="display:none">
+                        <label>Weights (one per observation, space-separated):</label>
+                        <input type="text" id="weights-9" placeholder="1 1 1 1 1">
+                    </div>
+                </div>
+                <div class="dual-view">
+                    <div class="view-panel full-width">
+                        <h4 id="extension-title-9">Ridge Regression: Contours + L2 Penalty Ball</h4>
+                        <canvas id="canvas-9" width="800" height="500"></canvas>
+                    </div>
+                </div>
+                <div class="output-panel" id="output-9">
+                    <p>OLS β̂ = <span id="ols-beta-9">-</span></p>
+                    <p id="ridge-output-9">Ridge β̂_λ = <span id="ridge-beta-9">-</span></p>
+                    <p id="lasso-output-9" style="display:none">Lasso β̂_λ (approx) = <span id="lasso-beta-9">-</span></p>
+                    <p id="wls-output-9" style="display:none">WLS β̂_W = <span id="wls-beta-9">-</span></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="references">
+            <h3>References & Learn More</h3>
+            <p>[1] Eggers, A. <em>OLS as Projection</em> (observation-space intuition).</p>
+            <p>[6] Ravishanker, N., Chi, Y., & Dey, D. K. <em>A First Course in Linear Model Theory</em>.</p>
+        </div>
+        <div class="export-controls">
+            <button id="export-png">Export as PNG</button>
+            <button id="export-json">Export Config (JSON)</button>
+            <button id="import-json">Import Config</button>
+            <input type="file" id="import-file" accept=".json" style="display:none">
+        </div>
+    </footer>
+
+    <!-- Main application scripts -->
+    <script src="linalg.js"></script>
+    <script src="viz2d.js"></script>
+    <script src="viz3d.js"></script>
+    <script src="modules.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

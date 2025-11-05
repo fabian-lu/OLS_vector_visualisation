@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLS Visualization - Test Suite</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        h1 {
+            color: #2563eb;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .test-pass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .test-fail {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .summary {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <h1>OLS Visualization Test Suite</h1>
+    <button onclick="runAllTests()">Run All Tests</button>
+
+    <div id="test-results"></div>
+
+    <div id="summary" class="summary"></div>
+
+    <script src="linalg.js"></script>
+
+    <script>
+        let totalTests = 0;
+        let passedTests = 0;
+        let failedTests = 0;
+
+        function assertEqual(actual, expected, tolerance = 1e-10) {
+            if (Array.isArray(actual) && Array.isArray(expected)) {
+                if (actual.length !== expected.length) return false;
+                for (let i = 0; i < actual.length; i++) {
+                    if (Array.isArray(actual[i])) {
+                        if (!assertEqual(actual[i], expected[i], tolerance)) return false;
+                    } else {
+                        if (Math.abs(actual[i] - expected[i]) > tolerance) return false;
+                    }
+                }
+                return true;
+            } else {
+                return Math.abs(actual - expected) < tolerance;
+            }
+        }
+
+        function test(name, fn) {
+            totalTests++;
+            try {
+                fn();
+                passedTests++;
+                log(name, true);
+            } catch (e) {
+                failedTests++;
+                log(name, false, e.message);
+            }
+        }
+
+        function log(testName, passed, error = '') {
+            const div = document.createElement('div');
+            div.className = 'test-result ' + (passed ? 'test-pass' : 'test-fail');
+            div.textContent = (passed ? '✓ ' : '✗ ') + testName;
+            if (error) div.textContent += ' - ' + error;
+            document.getElementById('test-results').appendChild(div);
+        }
+
+        function assert(condition, message = 'Assertion failed') {
+            if (!condition) throw new Error(message);
+        }
+
+        function runAllTests() {
+            totalTests = 0;
+            passedTests = 0;
+            failedTests = 0;
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('summary').innerHTML = '';
+
+            // Test Vector Operations
+            testVectorOperations();
+
+            // Test Matrix Operations
+            testMatrixOperations();
+
+            // Test QR Decomposition
+            testQRDecomposition();
+
+            // Test Projections
+            testProjections();
+
+            // Test OLS
+            testOLS();
+
+            // Test Statistics
+            testStatistics();
+
+            // Display summary
+            const summary = `
+                <div style="margin-top: 30px; padding: 20px; background: ${passedTests === totalTests ? '#d1fae5' : '#fee2e2'}; border-radius: 8px;">
+                    <h2>Test Summary</h2>
+                    <p>Total: ${totalTests}</p>
+                    <p>Passed: ${passedTests} (${(passedTests/totalTests*100).toFixed(1)}%)</p>
+                    <p>Failed: ${failedTests}</p>
+                </div>
+            `;
+            document.getElementById('summary').innerHTML = summary;
+        }
+
+        function testVectorOperations() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Vector Operations Tests</h2>';
+            document.getElementById('test-results').appendChild(section);
+
+            test('Vector dot product', () => {
+                const a = [1, 2, 3];
+                const b = [4, 5, 6];
+                const result = LinAlg.dot(a, b);
+                assert(assertEqual(result, 32), `Expected 32, got ${result}`);
+            });
+
+            test('Vector norm', () => {
+                const v = [3, 4];
+                const result = LinAlg.norm(v);
+                assert(assertEqual(result, 5), `Expected 5, got ${result}`);
+            });
+
+            test('Vector normalization', () => {
+                const v = [3, 4];
+                const result = LinAlg.normalize(v);
+                assert(assertEqual(LinAlg.norm(result), 1), 'Normalized vector should have norm 1');
+            });
+
+            test('Vector addition', () => {
+                const a = [1, 2, 3];
+                const b = [4, 5, 6];
+                const result = LinAlg.add(a, b);
+                assert(assertEqual(result, [5, 7, 9]), 'Vector addition failed');
+            });
+
+            test('Vector subtraction', () => {
+                const a = [4, 5, 6];
+                const b = [1, 2, 3];
+                const result = LinAlg.subtract(a, b);
+                assert(assertEqual(result, [3, 3, 3]), 'Vector subtraction failed');
+            });
+
+            test('Scalar multiplication', () => {
+                const v = [1, 2, 3];
+                const result = LinAlg.scale(v, 2);
+                assert(assertEqual(result, [2, 4, 6]), 'Scalar multiplication failed');
+            });
+
+            test('Cross product', () => {
+                const a = [1, 0, 0];
+                const b = [0, 1, 0];
+                const result = LinAlg.cross(a, b);
+                assert(assertEqual(result, [0, 0, 1]), 'Cross product failed');
+            });
+        }
+
+        function testMatrixOperations() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Matrix Operations Tests</h2>';
+            document.getElementById('test-results').appendChild(section);
+
+            test('Matrix transpose', () => {
+                const A = [[1, 2], [3, 4]];
+                const result = LinAlg.transpose(A);
+                assert(assertEqual(result, [[1, 3], [2, 4]]), 'Transpose failed');
+            });
+
+            test('Matrix multiplication', () => {
+                const A = [[1, 2], [3, 4]];
+                const B = [[5, 6], [7, 8]];
+                const result = LinAlg.multiply(A, B);
+                assert(assertEqual(result, [[19, 22], [43, 50]]), 'Matrix multiplication failed');
+            });
+
+            test('Matrix-vector multiplication', () => {
+                const A = [[1, 2], [3, 4]];
+                const x = [1, 2];
+                const result = LinAlg.matvec(A, x);
+                assert(assertEqual(result, [5, 11]), 'Matrix-vector multiplication failed');
+            });
+
+            test('Identity matrix', () => {
+                const I = LinAlg.identity(3);
+                assert(I[0][0] === 1 && I[1][1] === 1 && I[2][2] === 1, 'Identity matrix diagonal failed');
+                assert(I[0][1] === 0 && I[1][0] === 0, 'Identity matrix off-diagonal failed');
+            });
+
+            test('Matrix determinant 2x2', () => {
+                const A = [[1, 2], [3, 4]];
+                const det = LinAlg.determinant(A);
+                assert(assertEqual(det, -2), `Expected -2, got ${det}`);
+            });
+
+            test('Matrix determinant 3x3', () => {
+                const A = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+                const det = LinAlg.determinant(A);
+                assert(assertEqual(det, 0, 1e-6), `Expected 0 (singular matrix), got ${det}`);
+            });
+
+            test('Matrix inverse 2x2', () => {
+                const A = [[1, 2], [3, 4]];
+                const Ainv = LinAlg.inverse(A);
+                const I = LinAlg.multiply(A, Ainv);
+                assert(assertEqual(I, [[1, 0], [0, 1]], 1e-10), 'A * A^(-1) should equal I');
+            });
+
+            test('Singular matrix inverse returns null', () => {
+                const A = [[1, 2], [2, 4]]; // Singular
+                const Ainv = LinAlg.inverse(A);
+                assert(Ainv === null, 'Inverse of singular matrix should be null');
+            });
+        }
+
+        function testQRDecomposition() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>QR Decomposition Tests</h2>';
+            document.getElementById('test-results').appendChild(section);
+
+            test('QR decomposition correctness', () => {
+                const A = [[1, 2], [3, 4], [5, 6]];
+                const { Q, R } = LinAlg.qr(A);
+
+                // Q should be orthogonal: Q'Q = I
+                const QT = LinAlg.transpose(Q);
+                const QTQ = LinAlg.multiply(QT, Q);
+
+                // Check diagonal close to 1
+                assert(Math.abs(QTQ[0][0] - 1) < 1e-10, 'Q is not orthogonal');
+
+                // Reconstruct A from Q and R
+                const A_reconstructed = LinAlg.multiply(Q, R);
+                assert(assertEqual(A, A_reconstructed, 1e-10), 'QR reconstruction failed');
+            });
+
+            test('Matrix rank computation', () => {
+                const A = [[1, 2], [3, 4]]; // Full rank
+                const rank = LinAlg.rank(A);
+                assert(rank === 2, `Expected rank 2, got ${rank}`);
+            });
+
+            test('Rank deficient matrix', () => {
+                const A = [[1, 2], [2, 4]]; // Rank 1
+                const rank = LinAlg.rank(A);
+                assert(rank === 1, `Expected rank 1, got ${rank}`);
+            });
+        }
+
+        function testProjections() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Projection Tests</h2>';
+            document.getElementById('test-results').appendChild(section);
+
+            test('Project vector onto line', () => {
+                const v = [3, 4];
+                const U = [[1, 0]]; // x-axis
+                const proj = LinAlg.project(v, [[1], [0]]);
+                assert(assertEqual(proj, [3, 0], 1e-10), 'Projection onto x-axis failed');
+            });
+
+            test('Projection is idempotent', () => {
+                const X = [[1, 1], [1, 2], [1, 3]];
+                const P = LinAlg.projectionMatrix(X);
+                if (P) {
+                    const P2 = LinAlg.multiply(P, P);
+                    assert(assertEqual(P, P2, 1e-10), 'Projection matrix should be idempotent');
+                }
+            });
+
+            test('Residual orthogonal to column space', () => {
+                const X = [[1, 1], [1, 2], [1, 3]];
+                const y = [2, 3, 5];
+                const beta = LinAlg.ols(X, y);
+                const yhat = LinAlg.fitted(X, beta);
+                const e = LinAlg.residuals(y, yhat);
+
+                // X'e should be close to zero
+                const XT = LinAlg.transpose(X);
+                const XTe = LinAlg.matvec(XT, e);
+                assert(assertEqual(XTe, [0, 0], 1e-10), 'Residual not orthogonal to column space');
+            });
+        }
+
+        function testOLS() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>OLS Regression Tests</h2>';
+            document.getElementById('test-results').appendChild(section);
+
+            test('Simple linear regression', () => {
+                // Perfect fit: y = 2 + 3x
+                const X = [[1, 0], [1, 1], [1, 2]];
+                const y = [2, 5, 8];
+                const beta = LinAlg.ols(X, y);
+                assert(assertEqual(beta, [2, 3], 1e-10), `Expected [2, 3], got [${beta}]`);
+            });
+
+            test('OLS with noise', () => {
+                const X = [[1, 1], [1, 2], [1, 3], [1, 4]];
+                const y = [2, 3, 3.5, 5];
+                const beta = LinAlg.ols(X, y);
+                const yhat = LinAlg.fitted(X, beta);
+
+                // Check that fitted values are reasonable
+                assert(yhat.every(val => !isNaN(val)), 'Fitted values contain NaN');
+            });
+
+            test('R-squared calculation', () => {
+                // Perfect fit should give R² = 1
+                const y = [1, 2, 3, 4];
+                const yhat = [1, 2, 3, 4];
+                const r2 = LinAlg.rSquared(y, yhat);
+                assert(assertEqual(r2, 1, 1e-10), `Expected R² = 1, got ${r2}`);
+            });
+
+            test('R-squared for mean-only model', () => {
+                // Mean-only (no fit) should give R² = 0
+                const y = [1, 2, 3, 4];
+                const mean = LinAlg.mean(y);
+                const yhat = y.map(() => mean);
+                const r2 = LinAlg.rSquared(y, yhat);
+                assert(assertEqual(r2, 0, 1e-10), `Expected R² = 0, got ${r2}`);
+            });
+
+            test('TSS = ESS + RSS', () => {
+                const X = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5]];
+                const y = [2, 3, 3.5, 5, 5.5];
+                const beta = LinAlg.ols(X, y);
+                const yhat = LinAlg.fitted(X, beta);
+                const ybar = LinAlg.mean(y);
+
+                const tss = LinAlg.sumOfSquares(y.map(yi => yi - ybar));
+                const ess = LinAlg.sumOfSquares(yhat.map(yh => yh - ybar));
+                const rss = LinAlg.sumOfSquares(LinAlg.subtract(y, yhat));
+
+                assert(assertEqual(tss, ess + rss, 1e-10), `TSS = ESS + RSS failed: ${tss} ≠ ${ess + rss}`);
+            });
+        }
+
+        function testStatistics() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Statistical Tests</h2>';
+            document.getElementById('test-results').appendChild(section);
+
+            test('Standard errors computation', () => {
+                const X = [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5]];
+                const y = [2, 3, 3.5, 5, 5.5];
+                const beta = LinAlg.ols(X, y);
+                const yhat = LinAlg.fitted(X, beta);
+                const sigma = LinAlg.sigma(y, yhat, 2);
+                const se = LinAlg.standardErrors(X, sigma);
+
+                assert(se && se.length === 2, 'Standard errors should have length 2');
+                assert(se.every(val => val > 0), 'Standard errors should be positive');
+            });
+
+            test('t-statistics computation', () => {
+                const beta = [2, 3];
+                const se = [0.5, 0.4];
+                const tStats = LinAlg.tStats(beta, se);
+
+                assert(assertEqual(tStats, [4, 7.5], 1e-10), 't-statistics calculation failed');
+            });
+
+            test('F-statistic for nested models', () => {
+                const rss0 = 10;
+                const rss1 = 5;
+                const df0 = 1;
+                const df1 = 2;
+                const n = 10;
+
+                const fStat = LinAlg.fStatistic(rss0, rss1, df0, df1, n);
+                assert(fStat > 0, 'F-statistic should be positive');
+                assert(!isNaN(fStat), 'F-statistic should not be NaN');
+            });
+
+            test('Leverage computation', () => {
+                const X = [[1, 1], [1, 2], [1, 3]];
+                const h = LinAlg.leverage(X);
+
+                assert(h && h.length === 3, 'Leverage should have length 3');
+                assert(h.every(val => val >= 0 && val <= 1), 'Leverage values should be in [0, 1]');
+
+                // Sum of leverage values should equal p
+                const sumH = h.reduce((a, b) => a + b, 0);
+                assert(assertEqual(sumH, 2, 1e-10), `Sum of leverage should equal p=2, got ${sumH}`);
+            });
+        }
+
+        // Run tests on page load
+        window.onload = runAllTests;
+    </script>
+</body>
+</html>
