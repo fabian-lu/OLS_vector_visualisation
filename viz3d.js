@@ -8,6 +8,11 @@ window.VIZ3D_ENGINE = window.VIZ3D_ENGINE || 'threejs'; // Options: 'canvas', 't
 
 class Viz3D {
     constructor(canvasId, options = {}) {
+        this.canvasId = canvasId;
+
+        // Check if canvas exists, if not try to find and restore it
+        this.ensureCanvasExists(canvasId);
+
         // Get the engine preference from global setting or options
         const engineType = options.engine || window.VIZ3D_ENGINE || 'threejs';
 
@@ -21,7 +26,13 @@ class Viz3D {
                     this.engine = new Viz3DCanvas(canvasId, options);
                 } else {
                     console.info(`Creating Three.js visualization for ${canvasId}`);
-                    this.engine = new Viz3DThreeJS(canvasId, options);
+                    try {
+                        this.engine = new Viz3DThreeJS(canvasId, options);
+                    } catch (error) {
+                        console.warn('Three.js failed (WebGL not supported?), falling back to canvas', error);
+                        actualEngine = 'canvas (fallback)';
+                        this.engine = new Viz3DCanvas(canvasId, options);
+                    }
                 }
                 break;
 
@@ -45,6 +56,25 @@ class Viz3D {
         }
 
         this.engineType = actualEngine;
+    }
+
+    ensureCanvasExists(canvasId) {
+        let canvas = document.getElementById(canvasId);
+
+        // If canvas doesn't exist, check if plotly div exists and restore canvas
+        if (!canvas) {
+            const plotlyDiv = document.getElementById(canvasId + '-plotly');
+            if (plotlyDiv && plotlyDiv.parentNode) {
+                console.log(`Restoring canvas ${canvasId} from Plotly div`);
+                canvas = document.createElement('canvas');
+                canvas.id = canvasId;
+                canvas.width = 600;
+                canvas.height = 400;
+                plotlyDiv.parentNode.replaceChild(canvas, plotlyDiv);
+            }
+        }
+
+        return canvas;
     }
 
     // Delegate all methods to the active engine

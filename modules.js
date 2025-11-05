@@ -83,20 +83,36 @@ const Modules = {
         },
 
         visualize2D: function(u, v, isOrthogonal) {
-            const viz = new Viz2D('canvas-0');
-            viz.drawVector([0, 0], u.slice(0, 2), viz.colors.u, 'u', 3);
-            viz.drawVector([0, 0], v.slice(0, 2), viz.colors.v, 'v', 3);
+            try {
+                const viz = new Viz2D('canvas-0');
+                if (!viz || !viz.colors) {
+                    console.error('Failed to create 2D visualization');
+                    return;
+                }
+                viz.drawVector([0, 0], u.slice(0, 2), viz.colors.u, 'u', 3);
+                viz.drawVector([0, 0], v.slice(0, 2), viz.colors.v, 'v', 3);
 
-            // Draw orthogonality symbol if orthogonal
-            if (isOrthogonal && document.getElementById('show-orthogonal-0').checked) {
-                viz.drawOrthogonalSymbol([0, 0], u.slice(0, 2), v.slice(0, 2));
+                // Draw orthogonality symbol if orthogonal
+                if (isOrthogonal && document.getElementById('show-orthogonal-0').checked) {
+                    viz.drawOrthogonalSymbol([0, 0], u.slice(0, 2), v.slice(0, 2));
+                }
+            } catch (error) {
+                console.error('Error in visualize2D:', error);
             }
         },
 
         visualize3D: function(u, v, isOrthogonal) {
-            const viz = new Viz3D('canvas-0');
-            viz.drawVector3D([0, 0, 0], u, viz.colors.u, 'u', 3);
-            viz.drawVector3D([0, 0, 0], v, viz.colors.v, 'v', 3);
+            try {
+                const viz = new Viz3D('canvas-0');
+                if (!viz || !viz.colors || !viz.engine) {
+                    console.error('Failed to create 3D visualization');
+                    return;
+                }
+                viz.drawVector3D([0, 0, 0], u, viz.colors.u, 'u', 3);
+                viz.drawVector3D([0, 0, 0], v, viz.colors.v, 'v', 3);
+            } catch (error) {
+                console.error('Error in visualize3D:', error);
+            }
         }
     },
 

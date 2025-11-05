@@ -6,18 +6,28 @@
 class Viz3DPlotly {
     constructor(canvasId, options = {}) {
         this.canvasId = canvasId;
-        this.canvas = document.getElementById(canvasId);
-        if (!this.canvas) {
+        this.originalCanvas = document.getElementById(canvasId);
+        if (!this.originalCanvas) {
             console.error(`Canvas ${canvasId} not found`);
             return;
         }
 
-        // Replace canvas with div for Plotly
-        this.container = document.createElement('div');
-        this.container.id = canvasId + '-plotly';
-        this.container.style.width = this.canvas.width + 'px';
-        this.container.style.height = this.canvas.height + 'px';
-        this.canvas.parentNode.replaceChild(this.container, this.canvas);
+        // Save canvas properties for later restoration
+        this.canvasWidth = this.originalCanvas.width;
+        this.canvasHeight = this.originalCanvas.height;
+        this.canvasParent = this.originalCanvas.parentNode;
+
+        // Replace canvas with div for Plotly (or use existing plotly div)
+        const existingPlotlyDiv = document.getElementById(canvasId + '-plotly');
+        if (existingPlotlyDiv) {
+            this.container = existingPlotlyDiv;
+        } else {
+            this.container = document.createElement('div');
+            this.container.id = canvasId + '-plotly';
+            this.container.style.width = this.originalCanvas.width + 'px';
+            this.container.style.height = this.originalCanvas.height + 'px';
+            this.canvasParent.replaceChild(this.container, this.originalCanvas);
+        }
 
         this.width = parseInt(this.container.style.width);
         this.height = parseInt(this.container.style.height);
@@ -359,6 +369,13 @@ class Viz3DPlotly {
 
     dispose() {
         Plotly.purge(this.container);
+
+        // Restore original canvas element
+        if (this.originalCanvas && this.canvasParent && this.container.parentNode) {
+            this.originalCanvas.width = this.canvasWidth;
+            this.originalCanvas.height = this.canvasHeight;
+            this.container.parentNode.replaceChild(this.originalCanvas, this.container);
+        }
     }
 }
 
