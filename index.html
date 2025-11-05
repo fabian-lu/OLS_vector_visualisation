@@ -610,8 +610,18 @@
 
             // Handle engine changes
             engineSelect.addEventListener('change', function() {
+                const engineName = this.options[this.selectedIndex].text;
                 switch3DEngine(this.value);
-                alert('3D Engine changed to: ' + this.value + '\n\nNavigate to a module with 3D visuals (e.g., Module 0 in 3D mode) to see the new engine in action.');
+
+                // Automatically refresh the current module to show the new engine
+                if (typeof App !== 'undefined' && App.refreshCurrentModule) {
+                    setTimeout(() => {
+                        App.refreshCurrentModule();
+                        alert('3D Engine changed to: ' + engineName + '\n\nThe visualization has been refreshed. If you\'re in a module with 3D visuals (e.g., Module 0 in 3D mode), you should see the difference now!');
+                    }, 100);
+                } else {
+                    alert('3D Engine changed to: ' + engineName + '\n\nPlease navigate to a module with 3D visuals (e.g., Module 0 in 3D mode) or toggle 2D/3D to see the new engine.');
+                }
             });
         });
     </script>

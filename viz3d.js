@@ -12,12 +12,15 @@ class Viz3D {
         const engineType = options.engine || window.VIZ3D_ENGINE || 'threejs';
 
         // Create the appropriate engine
+        let actualEngine = engineType;
         switch (engineType) {
             case 'threejs':
                 if (typeof THREE === 'undefined') {
                     console.warn('Three.js not loaded, falling back to canvas');
+                    actualEngine = 'canvas (fallback)';
                     this.engine = new Viz3DCanvas(canvasId, options);
                 } else {
+                    console.info(`Creating Three.js visualization for ${canvasId}`);
                     this.engine = new Viz3DThreeJS(canvasId, options);
                 }
                 break;
@@ -25,19 +28,23 @@ class Viz3D {
             case 'plotly':
                 if (typeof Plotly === 'undefined') {
                     console.warn('Plotly.js not loaded, falling back to canvas');
+                    actualEngine = 'canvas (fallback)';
                     this.engine = new Viz3DCanvas(canvasId, options);
                 } else {
+                    console.info(`Creating Plotly.js visualization for ${canvasId}`);
                     this.engine = new Viz3DPlotly(canvasId, options);
                 }
                 break;
 
             case 'canvas':
             default:
+                console.info(`Creating Canvas visualization for ${canvasId}`);
                 this.engine = new Viz3DCanvas(canvasId, options);
+                actualEngine = 'canvas';
                 break;
         }
 
-        this.engineType = engineType;
+        this.engineType = actualEngine;
     }
 
     // Delegate all methods to the active engine
