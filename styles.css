@@ -55,6 +55,49 @@ header h1 {
     font-weight: 400;
 }
 
+/* Engine Selector */
+.engine-selector {
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.engine-selector label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-right: 10px;
+}
+
+.engine-selector select {
+    padding: 8px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1em;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.engine-selector select:hover {
+    border-color: var(--primary-color);
+}
+
+.engine-selector select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.engine-info {
+    margin-left: 10px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
 /* Navigation */
 #module-nav {
     background: var(--bg-primary);

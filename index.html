@@ -10,6 +10,15 @@
     <header>
         <h1>Geometric Linear Algebra for OLS</h1>
         <p class="subtitle">Interactive 2D & 3D Visualization of Observation-Space and Parameter-Space Perspectives</p>
+        <div class="engine-selector">
+            <label for="viz3d-engine-select">3D Engine:</label>
+            <select id="viz3d-engine-select">
+                <option value="threejs" selected>Three.js (Professional)</option>
+                <option value="plotly">Plotly.js (Scientific)</option>
+                <option value="canvas">Canvas (Lightweight)</option>
+            </select>
+            <span class="engine-info">← Choose your 3D visualization engine</span>
+        </div>
     </header>
 
     <nav id="module-nav">
@@ -566,11 +575,45 @@
         </div>
     </footer>
 
+    <!-- 3D Visualization Libraries -->
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
     <!-- Main application scripts -->
     <script src="linalg.js"></script>
     <script src="viz2d.js"></script>
+
+    <!-- 3D Engine Implementations -->
+    <script src="viz3d-canvas.js"></script>
+    <script src="viz3d-threejs.js"></script>
+    <script src="viz3d-plotly.js"></script>
     <script src="viz3d.js"></script>
+
     <script src="modules.js"></script>
     <script src="app.js"></script>
+
+    <!-- 3D Engine Selector Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const engineSelect = document.getElementById('viz3d-engine-select');
+
+            // Load saved preference
+            const saved = localStorage.getItem('viz3d_engine');
+            if (saved) {
+                engineSelect.value = saved;
+                window.VIZ3D_ENGINE = saved;
+            }
+
+            // Handle engine changes
+            engineSelect.addEventListener('change', function() {
+                switch3DEngine(this.value);
+                alert('3D Engine changed to: ' + this.value + '\n\nNavigate to a module with 3D visuals (e.g., Module 0 in 3D mode) to see the new engine in action.');
+            });
+        });
+    </script>
 </body>
 </html>
